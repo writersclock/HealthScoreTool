@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breath-Hold & Health Score Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(45deg, #1e3c72, #2a5298);
+            color: #333;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1e3c72;
+            margin-bottom: 1.5rem;
+            font-size: 2em;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #1e3c72;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #eee;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        button {
+            width: 100%;
+            padding: 1rem;
+            background: #2a5298;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #1e3c72;
+        }
+
+        #result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            display: none;
+        }
+
+        .score-scale {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .score-scale h3 {
+            margin-bottom: 0.5rem;
+            color: #1e3c72;
+        }
+
+        .score-scale ul {
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .score-scale li {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Breath-Hold & Health Score Calculator</h1>
+        
+        <div class="input-group">
+            <label for="age">Age</label>
+            <input type="number" id="age" placeholder="Enter your age">
+        </div>
+
+        <div class="input-group">
+            <label for="gender">Gender</label>
+            <select id="gender">
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="height">Height (cm)</label>
+            <input type="number" id="height" placeholder="Enter your height">
+        </div>
+
+        <div class="input-group">
+            <label for="weight">Weight (kg)</label>
+            <input type="number" id="weight" placeholder="Enter your weight">
+        </div>
+
+        <div class="input-group">
+            <label for="breathHold">Breath-Hold Duration (seconds)</label>
+            <input type="number" id="breathHold" placeholder="Enter breath-hold time">
+        </div>
+
+        <div class="input-group">
+            <label for="fitnessLevel">Fitness Level</label>
+            <select id="fitnessLevel">
+                <option value="0">Sedentary</option>
+                <option value="10">Moderate</option>
+                <option value="20">Active</option>
+                <option value="30">Athlete</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label for="breathingControl">Do you practice deep breathing, meditation, or yoga?</label>
+            <select id="breathingControl">
+                <option value="0">No</option>
+                <option value="5">Yes</option>
+            </select>
+        </div>
+
+        <button onclick="calculateHealthScore()">Calculate Health Score</button>
+
+        <div id="result"></div>
+
+        <div class="score-scale">
+            <h3>Health Score Scale:</h3>
+            <ul>
+                <li>0-30<br>Below Average</li>
+                <li>31-60<br>Average</li>
+                <li>61-80<br>Good</li>
+                <li>81-100<br>Excellent</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function calculateHealthScore() {
+            const age = parseInt(document.getElementById('age').value);
+            const height = parseFloat(document.getElementById('height').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const breathHold = parseFloat(document.getElementById('breathHold').value);
+            const fitnessLevel = parseInt(document.getElementById('fitnessLevel').value);
+            const breathingControl = parseInt(document.getElementById('breathingControl').value);
+            const result = document.getElementById('result');
+
+            if (isNaN(age) || isNaN(height) || isNaN(weight) || isNaN(breathHold)) {
+                alert('Please enter valid values');
+                return;
+            }
+
+            // BMI Calculation
+            const bmi = (weight / ((height / 100) ** 2)).toFixed(1);
+            let bmiPenalty = 0;
+            if (bmi < 18.5 || bmi > 24.9) bmiPenalty = 10; // Penalty for underweight or overweight
+
+            // Health Score Calculation
+            const healthScore = (breathHold * 0.5) + fitnessLevel - bmiPenalty + breathingControl;
+            let status = '';
+
+            if (healthScore <= 30) {
+                status = 'Below Average';
+                result.style.backgroundColor = '#ff7675';
+            } else if (healthScore <= 60) {
+                status = 'Average';
+                result.style.backgroundColor = '#ffeaa7';
+            } else if (healthScore <= 80) {
+                status = 'Good';
+                result.style.backgroundColor = '#55efc4';
+            } else {
+                status = 'Excellent';
+                result.style.backgroundColor = '#00b894';
+            }
+
+            result.style.display = 'block';
+            result.innerHTML = `
+                Your Health Score: ${healthScore.toFixed(1)}<br>
+                Status: ${status}
+            `;
+        }
+    </script>
+</body>
+</html>
