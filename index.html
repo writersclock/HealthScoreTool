@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Breath-Hold & Health Score Calculator</title>
+    <title>AI-Powered Personalized Health Insights</title>
     <style>
         * {
             margin: 0;
@@ -35,6 +35,13 @@
             color: #1e3c72;
             margin-bottom: 1.5rem;
             font-size: 2em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
         }
 
         .input-group {
@@ -87,6 +94,34 @@
             display: none;
         }
 
+        .recommendations {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .recommendations table {
+            width: 100%;
+            margin: 1rem 0;
+            border-collapse: collapse;
+        }
+
+        .recommendations td, .recommendations th {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .exercise-list {
+            margin-top: 1rem;
+            padding-left: 1.5rem;
+        }
+
+        .exercise-list li {
+            margin: 0.5rem 0;
+        }
+
         .score-scale {
             margin-top: 2rem;
             padding: 1rem;
@@ -114,8 +149,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>Breath-Hold & Health Score Calculator</h1>
+        <h1>AI-Powered Personalized Health Insights</h1>
+        <div class="subtitle">Backed by Science, Powered by AI</div>
         
+        <!-- Input fields remain unchanged -->
         <div class="input-group">
             <label for="age">Age</label>
             <input type="number" id="age" placeholder="Enter your age">
@@ -180,6 +217,7 @@
     <script>
         function calculateHealthScore() {
             const age = parseInt(document.getElementById('age').value);
+            const gender = document.getElementById('gender').value;
             const height = parseFloat(document.getElementById('height').value);
             const weight = parseFloat(document.getElementById('weight').value);
             const breathHold = parseFloat(document.getElementById('breathHold').value);
@@ -215,10 +253,86 @@
                 result.style.backgroundColor = '#00b894';
             }
 
+            // Caloric Intake Calculation
+            const bmr = (10 * weight) + (6.25 * height) - (5 * age) + (gender === 'male' ? 5 : -161);
+            const activityFactors = {0: 1.2, 10: 1.375, 20: 1.55, 30: 1.725};
+            const tdee = bmr * activityFactors[fitnessLevel];
+            const maintenanceCalories = Math.round(tdee);
+            const goalCalories = Math.round(tdee - 500); // Safe deficit for weight loss
+            const weeklyLoss = 0.5; // kg per week
+
+            // Exercise Recommendations
+            let exercises = [];
+            if (healthScore <= 30) {
+                exercises = [
+                    "Gentle walking (20-30 mins/day)",
+                    "Chair yoga",
+                    "Breathing exercises",
+                    "Stretching routines"
+                ];
+            } else if (healthScore <= 60) {
+                exercises = [
+                    "Brisk walking (30 mins/day)",
+                    "Light swimming",
+                    "Beginner yoga",
+                    "Resistance band training"
+                ];
+            } else if (healthScore <= 80) {
+                exercises = [
+                    "Cycling (30-45 mins)",
+                    "Pilates",
+                    "Bodyweight exercises",
+                    "Dance workouts"
+                ];
+            } else {
+                exercises = [
+                    "Jogging (30 mins)",
+                    "Circuit training",
+                    "Aerobic classes",
+                    "Interval walking"
+                ];
+            }
+
+            // Build Recommendations
+            const recommendations = `
+                <div class="recommendations">
+                    <h4>AI-Powered Health Plan</h4>
+                    <table>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Value</th>
+                        </tr>
+                        <tr>
+                            <td>Maintenance Calories</td>
+                            <td>${maintenanceCalories} kcal/day</td>
+                        </tr>
+                        <tr>
+                            <td>Recommended Intake</td>
+                            <td>${goalCalories} kcal/day</td>
+                        </tr>
+                        <tr>
+                            <td>Projected Weekly Loss</td>
+                            <td>~${weeklyLoss} kg/week</td>
+                        </tr>
+                    </table>
+                    
+                    <h4>Suggested Exercises</h4>
+                    <ul class="exercise-list">
+                        ${exercises.map(ex => `<li>${ex}</li>`).join('')}
+                    </ul>
+                    
+                    <p><em>Always consult a healthcare provider before starting new exercise programs.</em></p>
+                </div>
+            `;
+
+            // Update Result Display
             result.style.display = 'block';
             result.innerHTML = `
-                Your Health Score: ${healthScore.toFixed(1)}<br>
-                Status: ${status}
+                <div class="score-result">
+                    Your Health Score: ${healthScore.toFixed(1)}<br>
+                    Status: ${status}
+                </div>
+                ${recommendations}
             `;
         }
     </script>
